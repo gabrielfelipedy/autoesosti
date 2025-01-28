@@ -1,13 +1,15 @@
 from enum import Flag
+
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.service import Service as ChromeService
+from webdriver_manager.chrome import ChromeDriverManager
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import NoAlertPresentException, NoSuchElementException
 
-from webdriver_manager.chrome import ChromeDriverManager
 import PySimpleGUI as sg
 
 import winsound
@@ -29,28 +31,38 @@ class Esosti:
         #define atributos de classe
 
         
-        #self.servico = Service(ChromeDriverManager().install())
-        self.navegador = webdriver.Chrome(executable_path="C:\\chromedriver\\chromedriver-win32\\chromedriver.exe")
-
+        self.navegador = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+        #self.navegador = webdriver.Chrome(executable_path="C:\\chromedriver\\chromedriver-win32\\chromedriver.exe")
         
         self.navegador.maximize_window()
         self.navegador.get("https://esosti.trf1.jus.br/")
 
         print("Classe inicializada com sucesso")
-        #print(f"A variavel servico tem o valor {self.servico} do tipo {type(self.servico)}")
 
     # ********************************************
     # *********** Método iniciar e utilitários ***
     # ********************************************
 
-    def iniciar(self, id1, id2):
-        self.id1 = id1
-        self.id2 = id2
+    def iniciar(self):
+        self.getIDs()
         self.chamado_atendimento()
         self.chamado_retornado()
         self.atualiza_nevegador()
 
         print("Método iniciar finalizado com sucesso")
+
+
+    def getIDs(self):
+        chamados_atendimento = self.navegador.find_element(By.CSS_SELECTOR, "[aria-label='Atividades para Atendimento']")
+        id_atendimentos = chamados_atendimento.get_attribute("id")[12:17]
+        print(f'ESSE É O ID DO ELEMENTO ATENDIMENTOS: {id_atendimentos}')
+
+        chamados_retornados = self.navegador.find_element(By.CSS_SELECTOR, "[aria-label='Atividades - Atendimento Retornado']")
+        id_retornados = chamados_retornados.get_attribute("id")[12:17]
+        print(f'ESSE É O ID DO ELEMENTO RETORNADOS: {id_retornados}')
+
+        self.id1 = id_atendimentos
+        self.id2 = id_retornados
 
 
     def chamado_atendimento(self):
@@ -99,7 +111,9 @@ class Esosti:
     
 
     def autentica_atendente(self):
-        global usernm, passwd
+        usernm = ...
+        passwd = ...
+
         sg.theme("LightBlue2")
 
         # cria uma caixa de login para autenticação
@@ -115,14 +129,17 @@ class Esosti:
 
         print("autentique-se")
 
+        #Começa a captura de eventos da caixa de login
+
         while True:
             event, values = window.read()
+
+            #Se cancelar ou fechar a janela
             if event == "Cancel" or event == sg.WIN_CLOSED:
                 break
-            else:
-                if event == "Ok":
-                    usernm = values['-usrnm-']
-                    passwd = values['-pwd-']
+            elif event == "Ok":
+                usernm = values['-usrnm-']
+                passwd = values['-pwd-']
 
             username = self.navegador.find_element(By.ID, "j_username")
             password = self.navegador.find_element(By.ID, "j_password")
@@ -138,16 +155,18 @@ class Esosti:
             time.sleep(1)
 
 
-            #se der erro no login tenta novamente
+            #se der erro no login tenta novamente por chamada recursiva
             if self.navegador.current_url == 'https://esosti.trf1.jus.br/itsm/webclient/login/loginerror.jsp':
                 self.navegador.get("https://esosti.trf1.jus.br/")
                 self.autentica_atendente()
 
             time.sleep(5)
+            #clica na aba correta para visualizar os chamados
             self.navegador.find_element(By.ID, "m1e20cba1-sct_anchor_1").click()
             time.sleep(15)
 
         print("Método autentica atendente finalizado com sucesso")
+        return usernm
 
 
 # Main
@@ -156,25 +175,26 @@ if __name__ == "__main__":
     start = Esosti()
     start.autentica_atendente()
 
-    #print(usernm)
-    id1 = ''
-    id2 = ''
-    if usernm == 'ap298ps':
-        print('1')
-        id1 = '366199'
-        id2 = '366225'
-    elif usernm == 'ap29ps':
-        print('2')
-        id1 = '366744'
-        id2 = '366746'
-    elif usernm == 'ap328ps':
-        print('3')
-        id1 = '422122'
-        id2 = '422121'
-    elif usernm == 'ap361ps':
-        print('4')
-        id1 = '471630'
-        id2 = '471628'
+    # #print(usernm)
+    # id1 = ''
+    # id2 = ''
+
+    # if usernm == 'ap298ps':
+    #     print('1')
+    #     id1 = '366199'
+    #     id2 = '366225'
+    # elif usernm == 'ap29ps':
+    #     print('2')
+    #     id1 = '366744'
+    #     id2 = '366746'
+    # elif usernm == 'ap328ps':
+    #     print('3')
+    #     id1 = '422122'
+    #     id2 = '422121'
+    # elif usernm == 'ap361ps':
+    #     print('4')
+    #     id1 = '471630'
+    #     id2 = '471628'
 
     while True:
-        start.iniciar(id1, id2)
+        start.iniciar()
