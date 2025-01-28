@@ -40,7 +40,7 @@ class Esosti:
         print("Classe inicializada com sucesso")
 
     # ********************************************
-    # *********** Método iniciar e utilitários ***
+    # ******* Método iniciar e utilitários *******
     # ********************************************
 
     def iniciar(self):
@@ -54,11 +54,11 @@ class Esosti:
 
     def getIDs(self):
         chamados_atendimento = self.navegador.find_element(By.CSS_SELECTOR, "[aria-label='Atividades para Atendimento']")
-        id_atendimentos = chamados_atendimento.get_attribute("id")[12:17]
+        id_atendimentos = chamados_atendimento.get_attribute("id")[12:18]
         print(f'ESSE É O ID DO ELEMENTO ATENDIMENTOS: {id_atendimentos}')
 
         chamados_retornados = self.navegador.find_element(By.CSS_SELECTOR, "[aria-label='Atividades - Atendimento Retornado']")
-        id_retornados = chamados_retornados.get_attribute("id")[12:17]
+        id_retornados = chamados_retornados.get_attribute("id")[12:18]
         print(f'ESSE É O ID DO ELEMENTO RETORNADOS: {id_retornados}')
 
         self.id1 = id_atendimentos
@@ -166,35 +166,12 @@ class Esosti:
             time.sleep(15)
 
         print("Método autentica atendente finalizado com sucesso")
-        return usernm
-
 
 # Main
 if __name__ == "__main__":
 
     start = Esosti()
     start.autentica_atendente()
-
-    # #print(usernm)
-    # id1 = ''
-    # id2 = ''
-
-    # if usernm == 'ap298ps':
-    #     print('1')
-    #     id1 = '366199'
-    #     id2 = '366225'
-    # elif usernm == 'ap29ps':
-    #     print('2')
-    #     id1 = '366744'
-    #     id2 = '366746'
-    # elif usernm == 'ap328ps':
-    #     print('3')
-    #     id1 = '422122'
-    #     id2 = '422121'
-    # elif usernm == 'ap361ps':
-    #     print('4')
-    #     id1 = '471630'
-    #     id2 = '471628'
 
     while True:
         start.iniciar()
