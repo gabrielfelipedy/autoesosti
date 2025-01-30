@@ -53,13 +53,20 @@ class Esosti:
 
 
     def getIDs(self):
-        chamados_atendimento = self.navegador.find_element(By.CSS_SELECTOR, "[aria-label='Atividades para Atendimento']")
-        id_atendimentos = chamados_atendimento.get_attribute("id")[12:18]
-        print(f'ESSE É O ID DO ELEMENTO ATENDIMENTOS: {id_atendimentos}')
+        time.sleep(10)
 
-        chamados_retornados = self.navegador.find_element(By.CSS_SELECTOR, "[aria-label='Atividades - Atendimento Retornado']")
-        id_retornados = chamados_retornados.get_attribute("id")[12:18]
-        print(f'ESSE É O ID DO ELEMENTO RETORNADOS: {id_retornados}')
+        try:
+            chamados_atendimento = self.navegador.find_element(By.CSS_SELECTOR, "[aria-label='Atividades para Atendimento']")
+            id_atendimentos = chamados_atendimento.get_attribute("id")[12:18]
+            print(f'ESSE É O ID DO ELEMENTO ATENDIMENTOS: {id_atendimentos}')
+
+            chamados_retornados = self.navegador.find_element(By.CSS_SELECTOR, "[aria-label='Atividades - Atendimento Retornado']")
+            id_retornados = chamados_retornados.get_attribute("id")[12:18]
+            print(f'ESSE É O ID DO ELEMENTO RETORNADOS: {id_retornados}')
+
+        except (NoSuchElementException, Exception):
+            print("Elemento não encontrado")
+            self.getIDs()
 
         self.id1 = id_atendimentos
         self.id2 = id_retornados
@@ -154,7 +161,6 @@ class Esosti:
             entrar.click()
             time.sleep(1)
 
-
             #se der erro no login tenta novamente por chamada recursiva
             if self.navegador.current_url == 'https://esosti.trf1.jus.br/itsm/webclient/login/loginerror.jsp':
                 self.navegador.get("https://esosti.trf1.jus.br/")
@@ -170,8 +176,8 @@ class Esosti:
 # Main
 if __name__ == "__main__":
 
-    start = Esosti()
-    start.autentica_atendente()
+    essoti = Esosti()
+    essoti.autentica_atendente()
 
     while True:
-        start.iniciar()
+        essoti.iniciar()
