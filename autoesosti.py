@@ -44,7 +44,6 @@ class Esosti:
     # ********************************************
 
     def iniciar(self):
-        self.getIDs()
         self.chamado_atendimento()
         self.chamado_retornado()
         self.atualiza_nevegador()
@@ -108,6 +107,11 @@ class Esosti:
             self.navegador.switch_to.alert.accept()
         except NoAlertPresentException:
             print('Sem alerta')
+
+        if self.navegador.current_url == 'https://esosti.trf1.jus.br/itsm/webclient/login/exit.jsp?langcode=PT&formAuth=true&logintimeout=true':
+            self.navegador.get("https://esosti.trf1.jus.br/")
+            self.autentica_atendente()
+
         time.sleep(20)
 
         print("Método atualiza navegador atendente finalizado com sucesso")
@@ -167,8 +171,16 @@ class Esosti:
                 self.autentica_atendente()
 
             time.sleep(5)
+
+            #Pega os Ids
+            self.getIDs()
+
             #clica na aba correta para visualizar os chamados
-            self.navegador.find_element(By.ID, "m1e20cba1-sct_anchor_1").click()
+            try:
+                self.navegador.find_element(By.ID, "m1e20cba1-sct_anchor_1").click()
+            except NoSuchElementException:
+                print('Aba não disponível')
+
             time.sleep(15)
 
         print("Método autentica atendente finalizado com sucesso")
