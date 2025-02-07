@@ -52,7 +52,9 @@ class Esosti:
 
 
     def getIDs(self):
-        time.sleep(10)
+
+        id_atendimentos = "default"
+        id_retornados = "default"
 
         try:
             chamados_atendimento = self.navegador.find_element(By.CSS_SELECTOR, "[aria-label='Atividades para Atendimento']")
@@ -65,10 +67,14 @@ class Esosti:
 
         except (NoSuchElementException, Exception):
             print("Elemento não encontrado")
+
+        
+        if id_atendimentos == "default" or id_retornados == "default":
             self.getIDs()
 
         self.id1 = id_atendimentos
         self.id2 = id_retornados
+        return
 
 
     def chamado_atendimento(self):
@@ -172,16 +178,15 @@ class Esosti:
 
             time.sleep(5)
 
-            #Pega os Ids
-            self.getIDs()
-
             #clica na aba correta para visualizar os chamados
             try:
                 self.navegador.find_element(By.ID, "m1e20cba1-sct_anchor_1").click()
             except NoSuchElementException:
                 print('Aba não disponível')
 
-            time.sleep(15)
+            time.sleep(2)
+            self.getIDs()
+            time.sleep(10)
 
         print("Método autentica atendente finalizado com sucesso")
 
